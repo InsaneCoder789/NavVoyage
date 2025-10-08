@@ -1,6 +1,6 @@
-# tourism_booking_app
+# NavVoyage 
 
-A new Flutter project.
+NavVoyage is a tourism bookings application created with flutter 
 
 ## Getting Started
 
