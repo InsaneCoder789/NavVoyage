@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../widgets/activity_tile.dart';
-import '../blocs/booking_event.dart';
 import '../blocs/booking_bloc.dart';
+import '../blocs/booking_event.dart';
+import '../theme/app_theme.dart';
 import 'traveler_details_screen.dart';
 
 class CustomizeItineraryScreen extends StatefulWidget {
   const CustomizeItineraryScreen({super.key});
 
   @override
-  State<CustomizeItineraryScreen> createState() => _CustomizeItineraryScreenState();
+  State<CustomizeItineraryScreen> createState() =>
+      _CustomizeItineraryScreenState();
 }
 
 class _CustomizeItineraryScreenState extends State<CustomizeItineraryScreen> {
-  final List<String> activities = ['Hiking', 'Snorkeling', 'City Tour', 'Spa', 'Food Tasting', 'Museum Visit'];
+  final List<String> activities = [
+    'Hiking',
+    'Snorkeling',
+    'City Tour',
+    'Spa',
+    'Food Tasting',
+    'Museum Visit'
+  ];
   final List<String> selectedActivities = [];
   DateTime? startDate;
   DateTime? endDate;
@@ -37,7 +45,11 @@ class _CustomizeItineraryScreenState extends State<CustomizeItineraryScreen> {
     }
   }
 
-  bool get canProceed => selectedActivities.isNotEmpty && startDate != null && endDate != null && !endDate!.isBefore(startDate!);
+  bool get canProceed =>
+      selectedActivities.isNotEmpty &&
+      startDate != null &&
+      endDate != null &&
+      !endDate!.isBefore(startDate!);
 
   @override
   Widget build(BuildContext context) {
@@ -45,86 +57,165 @@ class _CustomizeItineraryScreenState extends State<CustomizeItineraryScreen> {
       appBar: AppBar(title: const Text('Customize Itinerary')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(children: [
-          const Text('Choose activities & dates', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          Expanded(
-            child: ListView(
-              children: activities
-                  .map((a) => ActivityTile(
-                        activity: a,
-                        selected: selectedActivities.contains(a),
-                        onTap: () {
-                          setState(() {
-                            if (selectedActivities.contains(a)) {
-                              selectedActivities.remove(a);
-                            } else {
-                              selectedActivities.add(a);
-                            }
-                          });
-                        },
-                      ))
-                  .toList(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Choose activities & dates',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: AppTheme.subtextColor),
             ),
-          ),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('Start Date', style: TextStyle(color: Colors.grey)),
-                  Text(startDate == null ? 'Not set' : startDate!.toLocal().toString().split(' ')[0]),
-                ]),
-                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  const Text('End Date', style: TextStyle(color: Colors.grey)),
-                  Text(endDate == null ? 'Not set' : endDate!.toLocal().toString().split(' ')[0]),
-                ]),
-                IconButton(
-                  icon: const Icon(Icons.calendar_month),
-                  onPressed: () async {
-                    await _pickDate(isStart: true);
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () async {
-                    await _pickDate(isStart: false);
-                  },
-                ),
-              ]),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(children: [
+            const SizedBox(height: 20),
+            // Activities List
             Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  Navigator.pop(context);
+              child: ListView.separated(
+                itemCount: activities.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final activity = activities[index];
+                  final isSelected = selectedActivities.contains(activity);
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (isSelected) {
+                          selectedActivities.remove(activity);
+                        } else {
+                          selectedActivities.add(activity);
+                        }
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppTheme.accentColor : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: isSelected
+                                ? AppTheme.primaryColor
+                                : Colors.grey.shade200),
+                        boxShadow: [
+                          if (!isSelected)
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            activity,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? AppTheme.primaryDarkColor
+                                  : AppTheme.textColor,
+                            ),
+                          ),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppTheme.primaryColor
+                                  : Colors.grey.shade200,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              isSelected ? Icons.check : Icons.add,
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppTheme.subtextColor,
+                              size: 18,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
                 },
-                child: const Text('Back'),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: canProceed
-                    ? () {
-                        final itinerary = {
-                          'activities': selectedActivities,
-                          'startDate': startDate,
-                          'endDate': endDate,
-                        };
-                        context.read<BookingBloc>().add(CustomizeItinerary(itinerary));
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const TravelerDetailsScreen()));
-                      }
-                    : null,
-                child: const Text('Next'),
+            const SizedBox(height: 24),
+            // Date Pickers
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  DateDisplay(
+                      label: 'Start Date',
+                      date: startDate == null
+                          ? 'Not set'
+                          : '${startDate!.month}/${startDate!.day}/${startDate!.year}',
+                      onTap: () => _pickDate(isStart: true)),
+                  DateDisplay(
+                      label: 'End Date',
+                      date: endDate == null
+                          ? 'Not set'
+                          : '${endDate!.month}/${endDate!.day}/${endDate!.year}',
+                      onTap: () => _pickDate(isStart: false)),
+                ],
               ),
             ),
-          ])
-        ]),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: canProceed
+              ? () {
+                  final itinerary = {
+                    'activities': selectedActivities,
+                    'startDate': startDate,
+                    'endDate': endDate,
+                  };
+                  context
+                      .read<BookingBloc>()
+                      .add(CustomizeItinerary(itinerary));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const TravelerDetailsScreen()));
+                }
+              : null,
+          child: const Text('Next'),
+        ),
+      ),
+    );
+  }
+}
+
+class DateDisplay extends StatelessWidget {
+  final String label, date;
+  final VoidCallback onTap;
+
+  const DateDisplay(
+      {super.key, required this.label, required this.date, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Text(label,
+              style: const TextStyle(color: AppTheme.subtextColor, fontSize: 12)),
+          const SizedBox(height: 4),
+          Text(date,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        ],
       ),
     );
   }
