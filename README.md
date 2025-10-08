@@ -21,19 +21,19 @@ Users can explore trips, customize itineraries, add traveler details, and confir
 ## Screenshots
 
 ### Explore Trips
-![Explore Trips](screenshots/explore_trips.png)
+![Explore Trips](screenshots/explore_trips.jpg)
 
 ### Customize Itinerary
-![Customize Itinerary](screenshots/customize_itinerary.png)
+![Customize Itinerary](screenshots/customize_itinerary.jpg)
 
 ### Traveler Details
-![Traveler Details](screenshots/traveler_details.png)
+![Traveler Details](screenshots/traveler_details.jpg)
 
 ### Review & Confirm
-![Review & Confirm](screenshots/review_confirm.png)
+![Review & Confirm](screenshots/review_confirm.jpg)
 
 ### Booking Success
-![Booking Success](screenshots/booking_success.png)
+![Booking Success](screenshots/booking_success.jpg)
 
 ## Getting Started
 
